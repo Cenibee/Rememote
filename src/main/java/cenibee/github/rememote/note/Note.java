@@ -21,7 +21,7 @@ public class Note {
     @Column(unique = true)
     String keyword;
 
-    @OneToMany
+    @OneToMany(mappedBy = "note")
     List<NoteDetail> details;
 
     @ManyToMany
