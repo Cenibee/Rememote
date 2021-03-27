@@ -16,9 +16,9 @@ public class Tag {
 
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     @Column(unique = true)
-    String name;
+    private String name;
 
 }

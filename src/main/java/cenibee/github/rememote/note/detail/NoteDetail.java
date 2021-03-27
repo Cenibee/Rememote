@@ -17,13 +17,13 @@ public class NoteDetail {
 
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
-    String category;
+    private String category;
 
-    String detail;
+    private String detail;
 
     @ManyToOne
-    Note note;
+    private Note note;
 
 }
