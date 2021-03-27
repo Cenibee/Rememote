@@ -17,15 +17,15 @@ public class Note {
 
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     @Column(unique = true)
-    String keyword;
+    private String keyword;
 
     @OneToMany(mappedBy = "note", cascade = {CascadeType.PERSIST})
-    List<NoteDetail> details;
+    private List<NoteDetail> details;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    Set<Tag> tags;
+    private Set<Tag> tags;
 
 }
