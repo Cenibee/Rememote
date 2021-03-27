@@ -1,5 +1,6 @@
 package cenibee.github.rememote.note;
 
+import cenibee.github.rememote.note.detail.NoteDetail;
 import cenibee.github.rememote.tag.Tag;
 import lombok.*;
 
@@ -21,10 +22,10 @@ public class Note {
     @Column(unique = true)
     String keyword;
 
-    @OneToMany(mappedBy = "note")
+    @OneToMany(mappedBy = "note", cascade = {CascadeType.PERSIST})
     List<NoteDetail> details;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Tag> tags;
 
 }
