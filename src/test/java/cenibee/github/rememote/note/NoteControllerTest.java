@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,6 +33,21 @@ class NoteControllerTest {
     void nullTest() {
         assertThat(mvc).isNotNull();
         assertThat(noteRepository).isNotNull();
+    }
+
+    @Test
+    void getOneNote() throws Exception {
+        Note note = Note.builder()
+                .keyword("keyword")
+                .build();
+        note = this.noteRepository.save(note);
+
+        mvc.perform(get("/api/notes/{id}", note.getId())
+                .accept(MediaTypes.HAL_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("_links.self.href").exists());
     }
 
     @Test

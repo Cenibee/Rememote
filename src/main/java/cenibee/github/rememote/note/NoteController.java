@@ -4,6 +4,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -18,8 +20,14 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> tempGet(@PathVariable Long id) {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getNote(@PathVariable Long id) {
+        Optional<Note> noteOptional = this.noteRepository.findById(id);
+
+        if (noteOptional.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity
+                .ok(getModel(noteOptional.get()));
     }
 
     @PostMapping
@@ -27,8 +35,11 @@ public class NoteController {
         note = this.noteRepository.save(note);
         return ResponseEntity
                 .created(linkTo(NoteController.class).slash(note.getId()).toUri())
-                .body(EntityModel.of(note,
-                        linkTo(methodOn(NoteController.class).tempGet(note.getId())).withSelfRel()));
+                .body(getModel(note));
     }
 
+    private EntityModel<Note> getModel(Note note) {
+        return EntityModel.of(note,
+                linkTo(methodOn(NoteController.class).getNote(note.getId())).withSelfRel());
+    }
 }
