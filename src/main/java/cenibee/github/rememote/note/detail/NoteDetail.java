@@ -1,5 +1,6 @@
-package cenibee.github.rememote.note;
+package cenibee.github.rememote.note.detail;
 
+import cenibee.github.rememote.note.Note;
 import lombok.*;
 
 import javax.persistence.Entity;
