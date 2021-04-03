@@ -1,6 +1,7 @@
 package cenibee.github.rememote.note;
 
 import cenibee.github.rememote.note.detail.NoteDetailModelAssembler;
+import cenibee.github.rememote.tag.TagModelAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.lang.NonNull;
@@ -16,9 +17,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class NoteModelAssembler implements RepresentationModelAssembler<Note, NoteModel> {
 
     private final NoteDetailModelAssembler detailAssembler;
+    private final TagModelAssembler tagAssembler;
 
-    public NoteModelAssembler(NoteDetailModelAssembler detailAssembler) {
+    public NoteModelAssembler(NoteDetailModelAssembler detailAssembler, TagModelAssembler tagAssembler) {
         this.detailAssembler = detailAssembler;
+        this.tagAssembler = tagAssembler;
     }
 
     @NonNull
@@ -34,7 +37,9 @@ public class NoteModelAssembler implements RepresentationModelAssembler<Note, No
                 .details(note.getDetails().stream()
                         .map(detailAssembler::toModel)
                         .collect(Collectors.toList()))
-                .tags(note.getTags())
+                .tags(note.getTags().stream()
+                        .map(tagAssembler::toModel)
+                        .collect(Collectors.toSet()))
                 .build();
     }
 
