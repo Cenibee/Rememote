@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -15,8 +14,11 @@ public class NoteController {
 
     private final NoteRepository noteRepository;
 
-    public NoteController(NoteRepository noteRepository) {
+    private final NoteModelAssembler assembler;
+
+    public NoteController(NoteRepository noteRepository, NoteModelAssembler assembler) {
         this.noteRepository = noteRepository;
+        this.assembler = assembler;
     }
 
     @GetMapping("/{id}")
@@ -26,8 +28,7 @@ public class NoteController {
         if (noteOptional.isEmpty())
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity
-                .ok(getModel(noteOptional.get()));
+        return ResponseEntity.ok(assembler.toModel(noteOptional.get()));
     }
 
     @PostMapping
@@ -35,11 +36,7 @@ public class NoteController {
         note = this.noteRepository.save(note);
         return ResponseEntity
                 .created(linkTo(NoteController.class).slash(note.getId()).toUri())
-                .body(getModel(note));
+                .body(assembler.toModel(note));
     }
 
-    private EntityModel<Note> getModel(Note note) {
-        return EntityModel.of(note,
-                linkTo(methodOn(NoteController.class).getNote(note.getId())).withSelfRel());
-    }
 }

@@ -43,7 +43,7 @@ class NoteControllerTest {
     void getOneNote() throws Exception {
         // given: 노트 하나가 저장되어 있을 때
         Note note = Note.builder()
-                .keyword("this is a keyword")
+                .keyword("this is a getOneNote")
                 .build();
         note.addDetail(NoteDetail.builder()
                 .note(note)
@@ -51,7 +51,7 @@ class NoteControllerTest {
                 .detail("this is a detail")
                 .build());
         note.addTag(Tag.builder()
-                .name("this is a tag name")
+                .name("this tag is a getOneNote")
                 .build());
         note = this.noteRepository.save(note);
 
@@ -70,7 +70,7 @@ class NoteControllerTest {
     @DisplayName("노트 하나 생성하기")
     void createNote() throws Exception {
         Note note = Note.builder()
-                .keyword("this is a keyword")
+                .keyword("this is a createNote")
                 .build();
         note.addDetail(NoteDetail.builder()
                 .note(note)
@@ -78,7 +78,7 @@ class NoteControllerTest {
                 .detail("this is a detail")
                 .build());
         note.addTag(Tag.builder()
-                .name("this is a tag name")
+                .name("this tag is a createNote")
                 .build());
 
         mvc.perform(post("/api/notes")
