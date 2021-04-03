@@ -1,9 +1,8 @@
 package cenibee.github.rememote.note;
 
 import cenibee.github.rememote.note.detail.NoteDetailModel;
-import cenibee.github.rememote.tag.Tag;
+import cenibee.github.rememote.tag.TagModel;
 import lombok.*;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
@@ -18,6 +17,6 @@ public class NoteModel extends RepresentationModel<NoteModel> {
 
     private String keyword;
     private List<NoteDetailModel> details;
-    private Set<Tag> tags;
+    private Set<TagModel> tags;
 
 }
