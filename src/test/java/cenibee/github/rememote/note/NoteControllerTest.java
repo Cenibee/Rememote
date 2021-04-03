@@ -1,6 +1,9 @@
 package cenibee.github.rememote.note;
 
+import cenibee.github.rememote.note.detail.NoteDetail;
+import cenibee.github.rememote.tag.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,25 +39,47 @@ class NoteControllerTest {
     }
 
     @Test
+    @DisplayName("노트 하나 가져오기")
     void getOneNote() throws Exception {
+        // given: 노트 하나가 저장되어 있을 때
         Note note = Note.builder()
-                .keyword("keyword")
+                .keyword("this is a keyword")
                 .build();
+        note.addDetail(NoteDetail.builder()
+                .note(note)
+                .category("this is a category")
+                .detail("this is a detail")
+                .build());
+        note.addTag(Tag.builder()
+                .name("this is a tag name")
+                .build());
         note = this.noteRepository.save(note);
 
+        // expect: 생성된 id 로 노트를 가져온다.
         mvc.perform(get("/api/notes/{id}", note.getId())
                 .accept(MediaTypes.HAL_JSON)
         )
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("tags[*]").exists())
+                .andExpect(jsonPath("details[*]").exists())
                 .andExpect(jsonPath("_links.self.href").exists());
     }
 
     @Test
+    @DisplayName("노트 하나 생성하기")
     void createNote() throws Exception {
         Note note = Note.builder()
                 .keyword("this is a keyword")
                 .build();
+        note.addDetail(NoteDetail.builder()
+                .note(note)
+                .category("this is a category")
+                .detail("this is a detail")
+                .build());
+        note.addTag(Tag.builder()
+                .name("this is a tag name")
+                .build());
 
         mvc.perform(post("/api/notes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -63,6 +88,8 @@ class NoteControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("tags[*]").exists())
+                .andExpect(jsonPath("details[*]").exists())
                 .andExpect(jsonPath("_links.self.href").exists());
     }
 
