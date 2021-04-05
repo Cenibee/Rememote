@@ -15,7 +15,7 @@ public class TagModelAssembler implements BaseModelAssembler<Tag, TagModel> {
     @Override
     public TagModel assemble(Tag tag) {
         return TagModel.builder()
-                .name(tag.name)
+                .name(tag.getName())
                 .build();
     }
 
