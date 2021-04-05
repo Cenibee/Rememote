@@ -61,7 +61,7 @@ class NoteControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("tags[*]").exists())
+                .andExpect(jsonPath("tags[*]._links.self").exists())
                 .andExpect(jsonPath("details[*]._links.self").exists())
                 .andExpect(jsonPath("_links.self.href").exists());
     }
@@ -88,7 +88,7 @@ class NoteControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("tags[*]").exists())
+                .andExpect(jsonPath("tags[*]._links.self").exists())
                 .andExpect(jsonPath("details[*]._links.self").exists())
                 .andExpect(jsonPath("_links.self.href").exists());
     }
