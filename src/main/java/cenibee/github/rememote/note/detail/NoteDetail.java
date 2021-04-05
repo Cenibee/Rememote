@@ -1,6 +1,7 @@
 package cenibee.github.rememote.note.detail;
 
 import cenibee.github.rememote.note.Note;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -23,6 +24,7 @@ public class NoteDetail {
 
     private String detail;
 
+    @JsonIgnore
     @ManyToOne
     private Note note;
 

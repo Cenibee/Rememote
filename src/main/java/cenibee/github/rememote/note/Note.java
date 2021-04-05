@@ -5,8 +5,7 @@ import cenibee.github.rememote.tag.Tag;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Builder @Getter @Setter
@@ -27,5 +26,33 @@ public class Note {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Tag> tags;
+
+    public void addDetail(NoteDetail newDetail) {
+        this.checkDetails();
+        this.details.add(newDetail);
+    }
+
+    public void addDetails(Collection<NoteDetail> details) {
+        this.checkDetails();
+        this.details.addAll(details);
+    }
+
+    public void addTag(Tag tag) {
+        this.checkTags();
+        this.tags.add(tag);
+    }
+
+    public void addTagAll(Collection<Tag> tags) {
+        this.checkTags();
+        this.tags.addAll(tags);
+    }
+
+    private void checkDetails() {
+        if (this.details == null) this.details = new LinkedList<>();
+    }
+
+    private void checkTags() {
+        if (this.tags == null) this.tags = new HashSet<>();
+    }
 
 }
