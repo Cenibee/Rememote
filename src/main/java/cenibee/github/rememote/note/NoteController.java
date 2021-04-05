@@ -31,6 +31,11 @@ public class NoteController {
         return ResponseEntity.ok(assembler.toModel(noteOptional.get()));
     }
 
+    @GetMapping
+    public ResponseEntity<?> selectNotes() {
+        return ResponseEntity.ok(assembler.toCollectionModel(this.noteRepository.findAll()));
+    }
+
     @PostMapping
     public ResponseEntity<?> createNote(@RequestBody Note note) {
         note = this.noteRepository.save(note);

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Component
-public class NoteModelAssembler extends BaseModelAssembler<Note, NoteModel> {
+public class NoteModelAssembler implements BaseModelAssembler<Note, NoteModel> {
 
     private final NoteDetailModelAssembler detailAssembler;
     private final TagModelAssembler tagAssembler;
@@ -23,7 +23,8 @@ public class NoteModelAssembler extends BaseModelAssembler<Note, NoteModel> {
         this.tagAssembler = tagAssembler;
     }
 
-    protected NoteModel assemble(Note note) {
+    @Override
+    public NoteModel assemble(Note note) {
         return NoteModel.builder()
                 .keyword(note.getKeyword())
                 .details(note.getDetails().stream()
@@ -35,11 +36,19 @@ public class NoteModelAssembler extends BaseModelAssembler<Note, NoteModel> {
                 .build();
     }
 
-    protected Collection<Link> links(Note note) {
+    @Override
+    public Collection<Link> links(Note note) {
         Collection<Link> links = new ArrayList<>();
         links.add(linkTo(NoteController.class).slash(note.getId()).withSelfRel());
 
         return links;
     }
 
+    @Override
+    public Collection<Link> links(Iterable<? extends Note> entities) {
+        Collection<Link> links = new ArrayList<>();
+        links.add(linkTo(NoteController.class).withSelfRel());
+
+        return links;
+    }
 }

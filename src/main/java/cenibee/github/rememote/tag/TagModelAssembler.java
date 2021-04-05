@@ -10,15 +10,17 @@ import java.util.Collection;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Component
-public class TagModelAssembler extends BaseModelAssembler<Tag, TagModel> {
+public class TagModelAssembler implements BaseModelAssembler<Tag, TagModel> {
 
-    protected TagModel assemble(Tag tag) {
+    @Override
+    public TagModel assemble(Tag tag) {
         return TagModel.builder()
                 .name(tag.name)
                 .build();
     }
 
-    protected Collection<Link> links(Tag tag) {
+    @Override
+    public Collection<Link> links(Tag tag) {
         Collection<Link> links = new ArrayList<>();
         links.add(linkTo(TagController.class).slash(tag.getId()).withSelfRel());
 
