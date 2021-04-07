@@ -59,7 +59,7 @@ class NoteControllerTest {
         note = this.noteRepository.save(note);
 
         // expect: 생성된 id 로 노트를 가져온다.
-        mvc.perform(get("/api/notes/{id}", note.getId())
+        mvc.perform(get("/api/note/{id}", note.getId())
                 .accept(MediaTypes.HAL_JSON)
         )
                 .andDo(print())
@@ -70,13 +70,13 @@ class NoteControllerTest {
     }
 
     @Test
-    @DisplayName("여러 노트 가져오기")
-    void selectNotes() throws Exception {
+    @DisplayName("노트 키워드 리스트 가져오기")
+    void noteList() throws Exception {
         // given: 여러 노트가 저장되어 있을 때
         List<Note> noteList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Note note = Note.builder()
-                    .keyword("this is a selectNotes" + i)
+                    .keyword("this is a noteList" + i)
                     .build();
             note.addDetail(NoteDetail.builder()
                     .note(note)
@@ -84,23 +84,25 @@ class NoteControllerTest {
                     .detail("this is a detail")
                     .build());
             note.addTag(Tag.builder()
-                    .name("this tag is a selectNotes" + i)
+                    .name("this tag is a noteList" + i)
                     .build());
             noteList.add(note);
         }
         this.noteRepository.saveAll(noteList);
 
         // expect: 생성된 id 로 노트를 가져온다.
-        mvc.perform(get("/api/notes")
+        mvc.perform(get("/api/note/list")
                 .accept(MediaTypes.HAL_JSON)
         )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("_links.self.href").exists())
                 .andExpect(jsonPath("_embedded.noteModelList[*]._links.self.href").exists())
-                .andExpect(jsonPath("_embedded.noteModelList[*].tags[*]_links.self.href").exists())
-                .andExpect(jsonPath("_embedded.noteModelList[*].details[*]_links.self.href").exists());
+                .andExpect(jsonPath("_embedded.noteModelList[*].keyword").exists())
+                .andExpect(jsonPath("_embedded.noteModelList[*].tags[*]").doesNotExist())
+                .andExpect(jsonPath("_embedded.noteModelList[*].details[*]").doesNotExist());
     }
+
     @Test
     @DisplayName("노트 하나 생성하기")
     void createNote() throws Exception {
@@ -116,7 +118,7 @@ class NoteControllerTest {
                 .name("this tag is a createNote")
                 .build());
 
-        mvc.perform(post("/api/notes")
+        mvc.perform(post("/api/note")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(note))
                 .accept(MediaTypes.HAL_JSON)
