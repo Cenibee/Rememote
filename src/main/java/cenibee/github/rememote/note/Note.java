@@ -1,6 +1,7 @@
 package cenibee.github.rememote.note;
 
 import cenibee.github.rememote.note.detail.NoteDetail;
+import cenibee.github.rememote.note.dto.NoteDto;
 import cenibee.github.rememote.tag.Tag;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.*;
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = {"id", "keyword"})
 @ToString(exclude = "id")
-public class Note {
+public class Note implements NoteDto {
 
     @Id
     @GeneratedValue
