@@ -20,7 +20,6 @@ public class NoteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getNote(@PathVariable Long id) {
-
         return this.noteRepository.findById(id)
                 .map(note -> ResponseEntity.ok(assembler.toModel(note)))
                 .orElse(ResponseEntity.notFound().build());

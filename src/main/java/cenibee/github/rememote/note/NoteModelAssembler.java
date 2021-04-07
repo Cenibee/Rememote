@@ -45,6 +45,7 @@ public class NoteModelAssembler implements BaseModelAssembler<NoteDto, NoteModel
                                 .map(tagAssembler::toModel)
                                 .collect(Collectors.toSet()))
                         .orElse(null))
+
                 .build();
     }
 
@@ -58,6 +59,7 @@ public class NoteModelAssembler implements BaseModelAssembler<NoteDto, NoteModel
 
     @Override
     public Collection<Link> links(Iterable<? extends NoteDto> entities) {
+
         Collection<Link> links = new ArrayList<>();
         links.add(linkTo(NoteController.class).withSelfRel());
 
