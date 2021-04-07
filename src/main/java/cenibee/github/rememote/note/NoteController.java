@@ -1,15 +1,12 @@
 package cenibee.github.rememote.note;
 
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping("/api/notes")
+@RequestMapping("/api/note")
 public class NoteController {
 
     private final NoteRepository noteRepository;
@@ -23,17 +20,15 @@ public class NoteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getNote(@PathVariable Long id) {
-        Optional<Note> noteOptional = this.noteRepository.findById(id);
 
-        if (noteOptional.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(assembler.toModel(noteOptional.get()));
+        return this.noteRepository.findById(id)
+                .map(note -> ResponseEntity.ok(assembler.toModel(note)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
-    public ResponseEntity<?> selectNotes() {
-        return ResponseEntity.ok(assembler.toCollectionModel(this.noteRepository.findAll()));
+    @GetMapping("/list")
+    public ResponseEntity<?> noteList() {
+        return ResponseEntity.ok(assembler.toCollectionModel(this.noteRepository.findAllKeywords()));
     }
 
     @PostMapping
