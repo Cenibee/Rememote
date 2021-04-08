@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react'
 import axios from 'axios'
@@ -7,66 +6,105 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!!
-        </a>
-        <TestList/>
+        <NoteList/>
       </header>
     </div>
   );
 }
 
-class TestList extends React.Component {
+class NoteList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            notes: [
-                'hello', 'world!'
-            ]
+            notes: []
         }
     }
 
     componentDidMount() {
-        axios.get("http://localhost:8080/api/notes")
+        axios.get("http://localhost:8080/api/note/list")
             .then(response => {
-                console.log(response.data['_embedded']['noteModelList']);
+                let notes = response.data['_embedded']['noteModelList'].map(note => {
+                    return {
+                        keyword: note.keyword,
+                        link: note._links.self.href
+                    }
+                });
                 this.setState({
-                    notes: response.data['_embedded']['noteModelList']
+                    notes: notes
                 });
             })
             .catch(reason => console.log(reason));
     }
 
     render() {
-        let list = this.state.notes.map(note => {
-            let detail = note.details ? note.details.map(detail => <li key={detail.detail}>{detail.detail}</li>) : undefined;
-            let tag = note.tags ? note.tags.map(tag => <li key={tag.name}>{tag.name}</li>) : undefined;
-            return (
-                    <li key={note.keyword}>
-                        {note.keyword}
-                        <ul>
-                            {detail}
-                            {tag}
-                        </ul>
-                    </li>
-                )
-            }
+        let list = this.state.notes.map(note =>
+            <NoteDetail
+                key={note.link}
+                link={note.link}
+                keyword={note.keyword} />
         )
 
         return (
             <ul>{list}</ul>
         )
     }
+}
 
+class NoteDetail extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOpened: false,
+            tags: [],
+            categories: []
+        }
+        this.getDetails = this.getDetails.bind(this);
+        this.onClick = this.onClick.bind(this);
+    }
+
+    onClick() {
+        if (!this.state.isOpened) {
+            axios.get(this.props.link)
+                .then(response => {
+                    console.log(response.data);
+                    let categories = response.data.details.map(category => {
+                        return {
+                            category: category.category,
+                            detail: category.detail
+                        }
+                    });
+                    let tags = response.data.tags.map(tag => tag.name);
+                    this.setState({
+                        categories: categories,
+                        tags: tags
+                    })
+                });
+        }
+        this.setState({
+            isOpened: !this.state.isOpened
+        });
+    }
+
+    getDetails() {
+        if (!this.state.isOpened) return null;
+        let tags = this.state.tags.map(tag => <li key={tag}>{tag}</li>);
+        let details = this.state.categories.map(category => <li key={category.category}>{category.category}: {category.detail}</li>);
+        return (
+            <ul>
+                {tags}
+                {details}
+            </ul>
+        );
+    }
+
+    render() {
+        return (
+            <li key={this.props.link} onClick={this.onClick}>
+                {this.props.keyword}
+                {this.getDetails()}
+            </li>
+        )
+    }
 }
 
 export default App;
