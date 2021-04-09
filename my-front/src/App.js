@@ -1,110 +1,30 @@
 import './App.css';
-import React from 'react'
-import axios from 'axios'
+import React, { Suspense } from 'react';
+import Home from './home/Home'
+import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
+import NoteList from './list/NoteList'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <NoteList/>
-      </header>
-    </div>
+      <div className="App">
+          <header>테스트 페이지</header>
+          <Router>
+              <nav>
+                  <Link className="App-link" to={"/"}><p>홈</p></Link>
+                  <Link className="App-link" to={"/list"}><p>리스트</p></Link>
+              </nav>
+              <article>
+                  <Suspense fallback={<div>Loading...</div>}>
+                      <Switch>
+                          <Route exact path="/" component={Home}/>
+                          <Route path="/list" component={NoteList}/>
+                      </Switch>
+                  </Suspense>
+              </article>
+          </Router>
+          <footer>this is a footer</footer>
+      </div>
   );
-}
-
-class NoteList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            notes: []
-        }
-    }
-
-    componentDidMount() {
-        axios.get("http://localhost:8080/api/note/list")
-            .then(response => {
-                let notes = response.data['_embedded']['noteModelList'].map(note => {
-                    return {
-                        keyword: note.keyword,
-                        link: note._links.self.href
-                    }
-                });
-                this.setState({
-                    notes: notes
-                });
-            })
-            .catch(reason => console.log(reason));
-    }
-
-    render() {
-        let list = this.state.notes.map(note =>
-            <NoteDetail
-                key={note.link}
-                link={note.link}
-                keyword={note.keyword} />
-        )
-
-        return (
-            <ul>{list}</ul>
-        )
-    }
-}
-
-class NoteDetail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isOpened: false,
-            tags: [],
-            categories: []
-        }
-        this.getDetails = this.getDetails.bind(this);
-        this.onClick = this.onClick.bind(this);
-    }
-
-    onClick() {
-        if (!this.state.isOpened) {
-            axios.get(this.props.link)
-                .then(response => {
-                    console.log(response.data);
-                    let categories = response.data.details.map(category => {
-                        return {
-                            category: category.category,
-                            detail: category.detail
-                        }
-                    });
-                    let tags = response.data.tags.map(tag => tag.name);
-                    this.setState({
-                        categories: categories,
-                        tags: tags
-                    })
-                });
-        }
-        this.setState({
-            isOpened: !this.state.isOpened
-        });
-    }
-
-    getDetails() {
-        if (!this.state.isOpened) return null;
-        let tags = this.state.tags.map(tag => <li key={tag}>{tag}</li>);
-        let details = this.state.categories.map(category => <li key={category.category}>{category.category}: {category.detail}</li>);
-        return (
-            <ul>
-                {tags}
-                {details}
-            </ul>
-        );
-    }
-
-    render() {
-        return (
-            <li key={this.props.link} onClick={this.onClick}>
-                {this.props.keyword}
-                {this.getDetails()}
-            </li>
-        )
-    }
 }
 
 export default App;
