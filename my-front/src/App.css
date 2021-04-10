@@ -39,6 +39,7 @@ footer {
   grid-row-end: 14;
   background-color: darkkhaki;
   grid-area: footer;
+
 }
 
 .App-header {
