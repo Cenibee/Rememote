@@ -1,7 +1,11 @@
 package cenibee.github.rememote.note;
 
+import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -22,7 +26,7 @@ public class NoteController {
     public ResponseEntity<?> getNote(@PathVariable Long id) {
         return this.noteRepository.findById(id)
                 .map(note -> ResponseEntity.ok(assembler.toModel(note)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @GetMapping("/list")
@@ -32,6 +36,10 @@ public class NoteController {
 
     @PostMapping
     public ResponseEntity<?> createNote(@RequestBody Note note) {
+        if (this.noteRepository.exists(Example.of(note))) {
+            throw new EntityExistsException();
+        }
+
         note = this.noteRepository.save(note);
         return ResponseEntity
                 .created(linkTo(NoteController.class).slash(note.getId()).toUri())
