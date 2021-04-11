@@ -172,7 +172,7 @@ class NoteControllerTest {
     @DisplayName("노트 생성 실패 (존재하는 ID)")
     void failToCreateNoteSameID() throws Exception {
         Note note = Note.builder()
-                .keyword("failToCreateNoteSameKeyword")
+                .keyword("failToCreateNoteSameID")
                 .build();
         note.addDetail(NoteDetail.builder()
                 .note(note)
@@ -180,7 +180,7 @@ class NoteControllerTest {
                 .detail("this is a detail")
                 .build());
         note.addTag(Tag.builder()
-                .name("failToCreateNoteSameKeyword")
+                .name("failToCreateNoteSameID")
                 .build());
         note = this.noteRepository.save(note);
 
