@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// TODO Test Note 들을 고정하고, 쓰기 작업은 Order 로 뒤에 수행하도록 지정하자
 @SpringBootTest
 @AutoConfigureMockMvc
 class NoteControllerTest {
@@ -67,6 +68,18 @@ class NoteControllerTest {
                 .andExpect(jsonPath("tags[*]._links.self").exists())
                 .andExpect(jsonPath("details[*]._links.self").exists())
                 .andExpect(jsonPath("_links.self.href").exists());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노트 가져오기")
+    void getInvalidNote() throws Exception {
+
+        // expect: 생성된 id 로 노트를 가져온다.
+        mvc.perform(get("/api/note/{id}", -1)
+                .accept(MediaTypes.HAL_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -130,4 +143,53 @@ class NoteControllerTest {
                 .andExpect(jsonPath("_links.self.href").exists());
     }
 
+    @Test
+    @DisplayName("노트 생성 실패 (중복 키워드)")
+    void failToCreateNoteSameKeyword() throws Exception {
+        Note note = Note.builder()
+                .keyword("failToCreateNoteSameKeyword")
+                .build();
+        note.addDetail(NoteDetail.builder()
+                .note(note)
+                .category("this is a category")
+                .detail("this is a detail")
+                .build());
+        note.addTag(Tag.builder()
+                .name("failToCreateNoteSameKeyword")
+                .build());
+        this.noteRepository.save(note);
+
+        mvc.perform(post("/api/note")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(note))
+                .accept(MediaTypes.HAL_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("노트 생성 실패 (존재하는 ID)")
+    void failToCreateNoteSameID() throws Exception {
+        Note note = Note.builder()
+                .keyword("failToCreateNoteSameKeyword")
+                .build();
+        note.addDetail(NoteDetail.builder()
+                .note(note)
+                .category("this is a category")
+                .detail("this is a detail")
+                .build());
+        note.addTag(Tag.builder()
+                .name("failToCreateNoteSameKeyword")
+                .build());
+        note = this.noteRepository.save(note);
+
+        mvc.perform(post("/api/note")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(note))
+                .accept(MediaTypes.HAL_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
 }
