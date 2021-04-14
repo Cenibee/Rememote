@@ -28,4 +28,9 @@ public class Account {
 
     private LocalDateTime createdAt;
 
+    private Role role;
+
+    public Account update(String name, String picture) {
+        return this;
+    }
 }
